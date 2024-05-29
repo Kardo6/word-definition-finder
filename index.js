@@ -10,22 +10,20 @@ loading.textContent = 'Your Definition Is Loading.';
 
 let loadingProcessTimer = setInterval(loadingTimer, 500);
 
-function getWordDefinitions(word) {
-    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
-        .then(function (response) {
-            return response.json();
-        })
-        .then(function (response) {
-            loadingProcessBar('off');
+async function getWordDefinitions(word) {
+    try {
+        const request = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+        const response = await request.json();
 
-            let allDefinitions = response[0].meanings[0].definitions;
-            allDefinitions.forEach(get => {
-                createNewDefinition(get.definition);
-            });
-        })
-        .catch(() => {
-            createNewDefinition('There is no definition of this word!');
+        loadingProcessBar('off');
+
+        let allDefinitions = response[0].meanings[0].definitions;
+        allDefinitions.forEach(get => {
+            createNewDefinition(get.definition);
         });
+    } catch (error) {
+        createNewDefinition('There is no definition of this word!', error);
+    }
 }
 
 function createNewDefinition(definition) {
